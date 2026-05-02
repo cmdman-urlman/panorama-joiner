@@ -463,6 +463,12 @@
         </div>
 
         <div class="ctrl-row">
+          <span class="ctrl-label">Päällekkäisyys</span>
+          <input type="range" id="overlap-r" min="0" max="50" value="0" step="1">
+          <span class="ctrl-val" id="overlap-v">0%</span>
+        </div>
+
+        <div class="ctrl-row">
           <span class="ctrl-label">Taustaväri</span>
           <input type="color" id="bg-color" value="#ffffff">
         </div>
@@ -512,7 +518,7 @@
 <script>
 const state = {
   images: [], dir: 'h', fit: 'crop', align: 'center',
-  gap: 0, bg: '#ffffff', quality: 0.92, zoom: 1
+  gap: 0, overlap: 0, bg: '#ffffff', quality: 0.92, zoom: 1
 };
 
 let dragSrcIdx = null;
@@ -566,7 +572,18 @@ $('qual-seg').querySelectorAll('button').forEach(b => {
   b.onclick = () => { $('qual-seg').querySelectorAll('button').forEach(x => x.classList.remove('active')); b.classList.add('active'); state.quality = parseFloat(b.dataset.q); };
 });
 
-$('gap-r').oninput = () => { state.gap = parseInt($('gap-r').value); $('gap-v').textContent = state.gap; draw(); };
+$('gap-r').oninput = () => {
+  state.gap = parseInt($('gap-r').value);
+  $('gap-v').textContent = state.gap;
+  if (state.gap > 0) { state.overlap = 0; $('overlap-r').value = 0; $('overlap-v').textContent = '0%'; }
+  draw();
+};
+$('overlap-r').oninput = () => {
+  state.overlap = parseInt($('overlap-r').value);
+  $('overlap-v').textContent = state.overlap + '%';
+  if (state.overlap > 0) { state.gap = 0; $('gap-r').value = 0; $('gap-v').textContent = '0'; }
+  draw();
+};
 $('bg-color').oninput = () => { state.bg = $('bg-color').value; draw(); };
 
 // Zoom
@@ -672,74 +689,79 @@ function draw() {
   const isH = state.dir === 'h';
   const n = imgs.length;
 
-  let cw, ch;
-
+  // Compute per-image scaled dims first
+  let scaledDims = [];
+  let ref;
   if (state.fit === 'crop') {
-    const ref = isH ? Math.min(...imgs.map(im => im.height)) : Math.min(...imgs.map(im => im.width));
-    if (isH) {
-      cw = imgs.reduce((s, im) => s + Math.round(im.width * ref / im.height), 0) + gap * (n - 1);
-      ch = ref;
-    } else {
-      cw = ref;
-      ch = imgs.reduce((s, im) => s + Math.round(im.height * ref / im.width), 0) + gap * (n - 1);
-    }
+    ref = isH ? Math.min(...imgs.map(im => im.height)) : Math.min(...imgs.map(im => im.width));
   } else if (state.fit === 'fit') {
-    const ref = isH ? Math.max(...imgs.map(im => im.height)) : Math.max(...imgs.map(im => im.width));
-    if (isH) {
-      cw = imgs.reduce((s, im) => s + Math.round(im.width * ref / im.height), 0) + gap * (n - 1);
-      ch = ref;
+    ref = isH ? Math.max(...imgs.map(im => im.height)) : Math.max(...imgs.map(im => im.width));
+  }
+
+  imgs.forEach(im => {
+    let sw, sh;
+    if (state.fit === 'stretch') {
+      sw = im.width; sh = im.height;
     } else {
-      cw = ref;
-      ch = imgs.reduce((s, im) => s + Math.round(im.height * ref / im.width), 0) + gap * (n - 1);
+      if (isH) { sh = ref; sw = Math.round(im.width * ref / im.height); }
+      else { sw = ref; sh = Math.round(im.height * ref / im.width); }
     }
-  } else { // stretch
-    if (isH) {
-      cw = imgs.reduce((s, im) => s + im.width, 0) + gap * (n - 1);
+    scaledDims.push({ sw, sh });
+  });
+
+  // Overlap: fraction of each image's leading dimension to hide
+  const overlapFrac = state.overlap / 100;
+
+  // Compute canvas size
+  let cw, ch;
+  if (isH) {
+    const totalW = scaledDims.reduce((s, d) => s + d.sw, 0);
+    const overlapPx = scaledDims.slice(0, -1).reduce((s, d) => s + Math.round(d.sw * overlapFrac), 0);
+    cw = totalW - overlapPx + gap * (n - 1);
+    if (state.fit === 'stretch') {
       ch = Math.max(...imgs.map(im => im.height));
     } else {
+      ch = ref;
+    }
+  } else {
+    const totalH = scaledDims.reduce((s, d) => s + d.sh, 0);
+    const overlapPx = scaledDims.slice(0, -1).reduce((s, d) => s + Math.round(d.sh * overlapFrac), 0);
+    ch = totalH - overlapPx + gap * (n - 1);
+    if (state.fit === 'stretch') {
       cw = Math.max(...imgs.map(im => im.width));
-      ch = imgs.reduce((s, im) => s + im.height, 0) + gap * (n - 1);
+    } else {
+      cw = ref;
     }
   }
 
   const canvas = document.createElement('canvas');
-  canvas.width = cw;
-  canvas.height = ch;
+  canvas.width = Math.max(1, cw);
+  canvas.height = Math.max(1, ch);
   const ctx = canvas.getContext('2d');
 
   ctx.fillStyle = state.bg;
   ctx.fillRect(0, 0, cw, ch);
 
   let offset = 0;
-  imgs.forEach(im => {
+  imgs.forEach((im, i) => {
+    const { sw, sh } = scaledDims[i];
     let dx, dy, dw, dh;
 
-    if (state.fit === 'stretch') {
-      if (isH) { dx = offset; dy = 0; dw = im.width; dh = ch; }
-      else { dx = 0; dy = offset; dw = cw; dh = im.height; }
+    if (isH) {
+      dw = sw; dh = state.fit === 'stretch' ? ch : sh;
+      dx = offset;
+      dy = state.fit === 'stretch' ? 0 : (state.align === 'center' ? (ch - sh) / 2 : state.align === 'end' ? ch - sh : 0);
     } else {
-      // scaled dims
-      let sw, sh;
-      const ref = state.fit === 'crop'
-        ? (isH ? Math.min(...imgs.map(x => x.height)) : Math.min(...imgs.map(x => x.width)))
-        : (isH ? Math.max(...imgs.map(x => x.height)) : Math.max(...imgs.map(x => x.width)));
-
-      if (isH) { sh = ref; sw = Math.round(im.width * ref / im.height); }
-      else { sw = ref; sh = Math.round(im.height * ref / im.width); }
-
-      if (isH) {
-        dx = offset;
-        dy = state.align === 'center' ? (ch - sh) / 2 : state.align === 'end' ? ch - sh : 0;
-        dw = sw; dh = sh;
-      } else {
-        dx = state.align === 'center' ? (cw - sw) / 2 : state.align === 'end' ? cw - sw : 0;
-        dy = offset;
-        dw = sw; dh = sh;
-      }
+      dw = state.fit === 'stretch' ? cw : sw; dh = sh;
+      dx = state.fit === 'stretch' ? 0 : (state.align === 'center' ? (cw - sw) / 2 : state.align === 'end' ? cw - sw : 0);
+      dy = offset;
     }
 
     ctx.drawImage(im, dx, dy, dw, dh);
-    offset += (isH ? dw : dh) + gap;
+
+    const step = (isH ? sw : sh);
+    const overlapPx = i < n - 1 ? Math.round(step * overlapFrac) : 0;
+    offset += step - overlapPx + gap;
   });
 
   if (currentCanvas) currentCanvas.remove();
