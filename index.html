@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panoraama Joiner</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f4f1ec;
+    --surface: #faf8f4;
+    --border: #d8d3ca;
+    --border-strong: #b8b0a4;
+    --text: #1a1714;
+    --text-muted: #7a7269;
+    --accent: #2a4a3e;
+    --accent-light: #e8f0ed;
+    --accent-hover: #1e3830;
+    --danger: #8b2e2e;
+    --gap-sm: 8px;
+    --gap-md: 16px;
+    --gap-lg: 24px;
+    --radius: 6px;
+    --radius-lg: 12px;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+    padding: 14px var(--gap-lg);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--accent);
+  }
+
+  .logo span {
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text-muted);
+  }
+
+  .header-badge {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 3px 8px;
+    border-radius: 20px;
+    border: 1px solid #c2d4ce;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: var(--gap-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+    overflow-y: auto;
+  }
+
+  .section-title {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  /* DROP ZONE */
+  .drop-zone {
+    border: 1.5px dashed var(--border-strong);
+    border-radius: var(--radius-lg);
+    padding: 28px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--bg);
+  }
+
+  .drop-zone:hover, .drop-zone.drag-over {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  .drop-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .drop-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .drop-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* THUMBNAILS */
+  .thumbs-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .thumb-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    cursor: grab;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .thumb-item:hover { border-color: var(--border-strong); }
+  .thumb-item.dragging { opacity: 0.35; }
+  .thumb-item.drag-over-item { border-color: var(--accent); background: var(--accent-light); }
+
+  .thumb-item img {
+    width: 48px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .thumb-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .thumb-num {
+    font-size: 11px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    min-width: 16px;
+  }
+
+  .thumb-rm {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .thumb-rm:hover { background: #f0e0e0; color: var(--danger); }
+
+  /* CONTROLS */
+  .control-group { display: flex; flex-direction: column; gap: 10px; }
+
+  .ctrl-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .ctrl-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .seg {
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .seg button {
+    padding: 5px 10px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    border: none;
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    white-space: nowrap;
+  }
+
+  .seg button + button { border-left: 1px solid var(--border); }
+  .seg button.active { background: var(--accent); color: #fff; }
+  .seg button:hover:not(.active) { background: var(--accent-light); color: var(--accent); }
+
+  .ctrl-row input[type=range] {
+    flex: 1;
+    accent-color: var(--accent);
+  }
+
+  .ctrl-row input[type=color] {
+    width: 32px;
+    height: 26px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    padding: 2px;
+    background: var(--surface);
+  }
+
+  .ctrl-val {
+    font-size: 11px;
+    min-width: 28px;
+    text-align: right;
+    color: var(--text);
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn:hover { border-color: var(--border-strong); background: var(--bg); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn.primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    width: 100%;
+    justify-content: center;
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .btn.primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+  .btn.danger-outline {
+    border-color: transparent;
+    color: var(--text-muted);
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  .btn.danger-outline:hover { color: var(--danger); background: #f8eded; border-color: #e8cccc; }
+
+  /* MAIN CANVAS AREA */
+  .main {
+    display: flex;
+    flex-direction: column;
+    padding: var(--gap-lg);
+    gap: var(--gap-md);
+    overflow: hidden;
+  }
+
+  .canvas-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-md);
+  }
+
+  .canvas-info {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .zoom-controls button {
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.12s;
+  }
+
+  .zoom-controls button:hover { background: var(--bg); }
+
+  .zoom-val {
+    font-size: 11px;
+    min-width: 38px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+
+  .canvas-frame {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: repeating-conic-gradient(#e0dbd4 0% 25%, #ece8e2 0% 50%) 0 0 / 20px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    min-height: 300px;
+    position: relative;
+  }
+
+  .canvas-empty {
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .canvas-empty-icon {
+    font-family: 'Fraunces', serif;
+    font-size: 48px;
+    font-style: italic;
+    color: var(--border-strong);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .canvas-empty-text {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  canvas {
+    display: block;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    transform-origin: center center;
+    transition: transform 0.2s;
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">Panora<span>ma</span></div>
+    <div class="header-badge">Joiner</div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- Drop zone -->
+    <div>
+      <div class="section-title">Kuvat</div>
+      <div class="drop-zone" id="drop-zone">
+        <span class="drop-icon">⬡</span>
+        <div class="drop-title">Pudota kuvat tähän</div>
+        <div class="drop-sub">tai klikkaa lisätäksesi<br>JPG · PNG · WEBP · GIF</div>
+      </div>
+      <input type="file" id="file-input" multiple accept="image/*" style="display:none">
+    </div>
+
+    <!-- Thumbnails -->
+    <div id="thumbs-section" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div class="section-title" style="margin:0">Järjestys <span id="img-count" style="color:var(--text)">(0)</span></div>
+        <button class="btn danger-outline" id="clear-btn">Tyhjennä</button>
+      </div>
+      <div class="thumbs-grid" id="thumbs-grid"></div>
+      <div style="margin-top:8px">
+        <button class="btn" style="width:100%;justify-content:center;font-size:11px" id="add-more-btn">+ Lisää kuvia</button>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div id="controls-section" style="display:none">
+      <div class="section-title">Asetukset</div>
+      <div class="control-group">
+
+        <div class="ctrl-row">
+          <span class="ctrl-label">Suunta</span>
+          <div class="seg" id="dir-seg">
+            <button class="active" data-dir="h">↔ Vaaka</button>
+            <button data-dir="v">↕ Pysty</button>
+          </div>
+        </div>
+
+        <div class="ctrl-row">
+          <span class="ctrl-label">Reunat</span>
+          <div class="seg" id="fit-seg">
+            <button class="active" data-fit="crop">Rajaa</button>
+            <button data-fit="fit">Sovita</button>
+            <button data-fit="stretch">Venytä</button>
+          </div>
+        </div>
+
+        <div class="ctrl-row">
+          <span class="ctrl-label">Kohdistus</span>
+          <div class="seg" id="align-seg">
+            <button class="active" data-align="center">Keski</button>
+            <button data-align="start">Alku</button>
+            <button data-align="end">Loppu</button>
+          </div>
+        </div>
+
+        <div class="ctrl-row">
+          <span class="ctrl-label">Väli (px)</span>
+          <input type="range" id="gap-r" min="0" max="100" value="0" step="1">
+          <span class="ctrl-val" id="gap-v">0</span>
+        </div>
+
+        <div class="ctrl-row">
+          <span class="ctrl-label">Taustaväri</span>
+          <input type="color" id="bg-color" value="#ffffff">
+        </div>
+
+        <div class="ctrl-row">
+          <span class="ctrl-label">Laatu</span>
+          <div class="seg" id="qual-seg">
+            <button data-q="0.7">Matala</button>
+            <button class="active" data-q="0.92">Normaali</button>
+            <button data-q="1.0">Korkea</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Download -->
+    <div style="margin-top:auto">
+      <button class="btn primary" id="dl-btn" disabled>↓ Lataa panoraama</button>
+      <div style="text-align:center;margin-top:8px;font-size:10px;color:var(--text-muted)" id="dl-info"></div>
+    </div>
+
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="canvas-toolbar">
+      <div class="canvas-info" id="canvas-info">Ei kuvia</div>
+      <div class="zoom-controls">
+        <button id="zoom-out">−</button>
+        <span class="zoom-val" id="zoom-label">100%</span>
+        <button id="zoom-in">+</button>
+        <button id="zoom-fit" style="width:auto;padding:0 10px;font-size:11px;font-family:inherit">Sovita</button>
+      </div>
+    </div>
+
+    <div class="canvas-frame" id="canvas-frame">
+      <div class="canvas-empty" id="canvas-empty">
+        <span class="canvas-empty-icon">Panor</span>
+        <div class="canvas-empty-text">Lisää vähintään 2 kuvaa aloittaaksesi</div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+const state = {
+  images: [], dir: 'h', fit: 'crop', align: 'center',
+  gap: 0, bg: '#ffffff', quality: 0.92, zoom: 1
+};
+
+let dragSrcIdx = null;
+let currentCanvas = null;
+
+const $ = id => document.getElementById(id);
+const dropZone = $('drop-zone');
+const fileInput = $('file-input');
+const thumbsSection = $('thumbs-section');
+const thumbsGrid = $('thumbs-grid');
+const controlsSection = $('controls-section');
+const canvasFrame = $('canvas-frame');
+const canvasEmpty = $('canvas-empty');
+const dlBtn = $('dl-btn');
+const dlInfo = $('dl-info');
+const canvasInfo = $('canvas-info');
+const zoomLabel = $('zoom-label');
+
+// Events
+dropZone.onclick = () => fileInput.click();
+$('add-more-btn').onclick = () => fileInput.click();
+$('clear-btn').onclick = () => { state.images = []; redraw(); };
+fileInput.onchange = e => loadFiles(e.target.files);
+
+dropZone.ondragover = e => { e.preventDefault(); dropZone.classList.add('drag-over'); };
+dropZone.ondragleave = () => dropZone.classList.remove('drag-over');
+dropZone.ondrop = e => { e.preventDefault(); dropZone.classList.remove('drag-over'); loadFiles(e.dataTransfer.files); };
+
+// Seg buttons
+function setupSeg(id, key) {
+  document.getElementById(id).querySelectorAll('button').forEach(b => {
+    b.onclick = () => {
+      document.getElementById(id).querySelectorAll('button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      state[key] = b.dataset[key] || b.dataset.q || b.dataset.dir || b.dataset.fit || b.dataset.align;
+      draw();
+    };
+  });
+}
+
+$('dir-seg').querySelectorAll('button').forEach(b => {
+  b.onclick = () => { $('dir-seg').querySelectorAll('button').forEach(x => x.classList.remove('active')); b.classList.add('active'); state.dir = b.dataset.dir; draw(); };
+});
+$('fit-seg').querySelectorAll('button').forEach(b => {
+  b.onclick = () => { $('fit-seg').querySelectorAll('button').forEach(x => x.classList.remove('active')); b.classList.add('active'); state.fit = b.dataset.fit; draw(); };
+});
+$('align-seg').querySelectorAll('button').forEach(b => {
+  b.onclick = () => { $('align-seg').querySelectorAll('button').forEach(x => x.classList.remove('active')); b.classList.add('active'); state.align = b.dataset.align; draw(); };
+});
+$('qual-seg').querySelectorAll('button').forEach(b => {
+  b.onclick = () => { $('qual-seg').querySelectorAll('button').forEach(x => x.classList.remove('active')); b.classList.add('active'); state.quality = parseFloat(b.dataset.q); };
+});
+
+$('gap-r').oninput = () => { state.gap = parseInt($('gap-r').value); $('gap-v').textContent = state.gap; draw(); };
+$('bg-color').oninput = () => { state.bg = $('bg-color').value; draw(); };
+
+// Zoom
+$('zoom-in').onclick = () => { state.zoom = Math.min(state.zoom * 1.25, 4); applyZoom(); };
+$('zoom-out').onclick = () => { state.zoom = Math.max(state.zoom / 1.25, 0.1); applyZoom(); };
+$('zoom-fit').onclick = () => fitZoom();
+
+function applyZoom() {
+  if (currentCanvas) {
+    currentCanvas.style.transform = `scale(${state.zoom})`;
+    zoomLabel.textContent = Math.round(state.zoom * 100) + '%';
+  }
+}
+
+function fitZoom() {
+  if (!currentCanvas) return;
+  const frame = canvasFrame.getBoundingClientRect();
+  const scaleW = (frame.width - 48) / currentCanvas.width;
+  const scaleH = (frame.height - 48) / currentCanvas.height;
+  state.zoom = Math.min(scaleW, scaleH, 1);
+  applyZoom();
+}
+
+// Download
+dlBtn.onclick = () => {
+  if (!currentCanvas) return;
+  const a = document.createElement('a');
+  a.href = currentCanvas.toDataURL('image/jpeg', state.quality);
+  a.download = 'panoraama.jpg';
+  a.click();
+};
+
+// Load files
+function loadFiles(files) {
+  const arr = Array.from(files).filter(f => f.type.startsWith('image/'));
+  let loaded = 0;
+  arr.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        state.images.push({ img, name: file.name });
+        loaded++;
+        if (loaded === arr.length) redraw();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Redraw thumbnails + canvas
+function redraw() {
+  fileInput.value = '';
+  const n = state.images.length;
+  dropZone.style.display = n > 0 ? 'none' : '';
+  thumbsSection.style.display = n > 0 ? '' : 'none';
+  controlsSection.style.display = n >= 2 ? '' : 'none';
+  canvasEmpty.style.display = n >= 2 ? 'none' : '';
+  $('img-count').textContent = '(' + n + ')';
+
+  // Thumbnails
+  thumbsGrid.innerHTML = '';
+  state.images.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'thumb-item';
+    div.draggable = true;
+    div.innerHTML = `
+      <span class="thumb-num">${i + 1}</span>
+      <img src="${item.img.src}" alt="">
+      <span class="thumb-name">${item.name}</span>
+      <button class="thumb-rm" data-i="${i}">×</button>
+    `;
+    div.ondragstart = () => { dragSrcIdx = i; setTimeout(() => div.classList.add('dragging'), 0); };
+    div.ondragend = () => { div.classList.remove('dragging'); thumbsGrid.querySelectorAll('.thumb-item').forEach(x => x.classList.remove('drag-over-item')); };
+    div.ondragover = e => { e.preventDefault(); div.classList.add('drag-over-item'); };
+    div.ondragleave = () => div.classList.remove('drag-over-item');
+    div.ondrop = e => {
+      e.preventDefault();
+      div.classList.remove('drag-over-item');
+      if (dragSrcIdx === null || dragSrcIdx === i) return;
+      const moved = state.images.splice(dragSrcIdx, 1)[0];
+      state.images.splice(i, 0, moved);
+      dragSrcIdx = null;
+      redraw();
+    };
+    div.querySelector('.thumb-rm').onclick = () => { state.images.splice(i, 1); redraw(); };
+    thumbsGrid.appendChild(div);
+  });
+
+  if (n >= 2) draw();
+  else {
+    if (currentCanvas) { currentCanvas.remove(); currentCanvas = null; }
+    dlBtn.disabled = true; dlInfo.textContent = ''; canvasInfo.textContent = 'Ei kuvia';
+  }
+}
+
+// Main draw
+function draw() {
+  if (state.images.length < 2) return;
+  const imgs = state.images.map(x => x.img);
+  const gap = state.gap;
+  const isH = state.dir === 'h';
+  const n = imgs.length;
+
+  let cw, ch;
+
+  if (state.fit === 'crop') {
+    const ref = isH ? Math.min(...imgs.map(im => im.height)) : Math.min(...imgs.map(im => im.width));
+    if (isH) {
+      cw = imgs.reduce((s, im) => s + Math.round(im.width * ref / im.height), 0) + gap * (n - 1);
+      ch = ref;
+    } else {
+      cw = ref;
+      ch = imgs.reduce((s, im) => s + Math.round(im.height * ref / im.width), 0) + gap * (n - 1);
+    }
+  } else if (state.fit === 'fit') {
+    const ref = isH ? Math.max(...imgs.map(im => im.height)) : Math.max(...imgs.map(im => im.width));
+    if (isH) {
+      cw = imgs.reduce((s, im) => s + Math.round(im.width * ref / im.height), 0) + gap * (n - 1);
+      ch = ref;
+    } else {
+      cw = ref;
+      ch = imgs.reduce((s, im) => s + Math.round(im.height * ref / im.width), 0) + gap * (n - 1);
+    }
+  } else { // stretch
+    if (isH) {
+      cw = imgs.reduce((s, im) => s + im.width, 0) + gap * (n - 1);
+      ch = Math.max(...imgs.map(im => im.height));
+    } else {
+      cw = Math.max(...imgs.map(im => im.width));
+      ch = imgs.reduce((s, im) => s + im.height, 0) + gap * (n - 1);
+    }
+  }
+
+  const canvas = document.createElement('canvas');
+  canvas.width = cw;
+  canvas.height = ch;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = state.bg;
+  ctx.fillRect(0, 0, cw, ch);
+
+  let offset = 0;
+  imgs.forEach(im => {
+    let dx, dy, dw, dh;
+
+    if (state.fit === 'stretch') {
+      if (isH) { dx = offset; dy = 0; dw = im.width; dh = ch; }
+      else { dx = 0; dy = offset; dw = cw; dh = im.height; }
+    } else {
+      // scaled dims
+      let sw, sh;
+      const ref = state.fit === 'crop'
+        ? (isH ? Math.min(...imgs.map(x => x.height)) : Math.min(...imgs.map(x => x.width)))
+        : (isH ? Math.max(...imgs.map(x => x.height)) : Math.max(...imgs.map(x => x.width)));
+
+      if (isH) { sh = ref; sw = Math.round(im.width * ref / im.height); }
+      else { sw = ref; sh = Math.round(im.height * ref / im.width); }
+
+      if (isH) {
+        dx = offset;
+        dy = state.align === 'center' ? (ch - sh) / 2 : state.align === 'end' ? ch - sh : 0;
+        dw = sw; dh = sh;
+      } else {
+        dx = state.align === 'center' ? (cw - sw) / 2 : state.align === 'end' ? cw - sw : 0;
+        dy = offset;
+        dw = sw; dh = sh;
+      }
+    }
+
+    ctx.drawImage(im, dx, dy, dw, dh);
+    offset += (isH ? dw : dh) + gap;
+  });
+
+  if (currentCanvas) currentCanvas.remove();
+  currentCanvas = canvas;
+  canvasFrame.appendChild(canvas);
+
+  const mb = (cw * ch * 3 / 1024 / 1024).toFixed(1);
+  canvasInfo.textContent = `${cw} × ${ch} px`;
+  dlInfo.textContent = `~${mb} MB raakana`;
+  dlBtn.disabled = false;
+
+  fitZoom();
+}
+</script>
+</body>
+</html>
