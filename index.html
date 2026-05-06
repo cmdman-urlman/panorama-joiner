@@ -7,522 +7,334 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #f4f1ec;
-    --surface: #faf8f4;
-    --border: #d8d3ca;
-    --border-strong: #b8b0a4;
-    --text: #1a1714;
-    --text-muted: #7a7269;
-    --accent: #2a4a3e;
-    --accent-light: #e8f0ed;
-    --accent-hover: #1e3830;
-    --danger: #8b2e2e;
-    --gap-sm: 8px;
-    --gap-md: 16px;
-    --gap-lg: 24px;
-    --radius: 6px;
-    --radius-lg: 12px;
+    --bg: #f4f1ec; --surface: #faf8f4; --border: #d8d3ca;
+    --border-strong: #b8b0a4; --text: #1a1714; --text-muted: #7a7269;
+    --accent: #2a4a3e; --accent-light: #e8f0ed; --accent-hover: #1e3830;
+    --danger: #8b2e2e; --radius: 6px; --radius-lg: 12px;
   }
-
-  html, body {
-    height: 100%;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-  }
-
-  .layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    grid-template-rows: auto 1fr;
-    min-height: 100vh;
-  }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px; }
+  .layout { display: grid; grid-template-columns: 290px 1fr; grid-template-rows: auto 1fr; min-height: 100vh; }
 
   /* HEADER */
-  header {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: center;
-    gap: var(--gap-md);
-    padding: 14px var(--gap-lg);
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-  }
-
-  .logo {
-    font-family: 'Fraunces', serif;
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-    color: var(--accent);
-  }
-
-  .logo span {
-    font-weight: 300;
-    font-style: italic;
-    color: var(--text-muted);
-  }
-
-  .header-badge {
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    background: var(--accent-light);
-    color: var(--accent);
-    padding: 3px 8px;
-    border-radius: 20px;
-    border: 1px solid #c2d4ce;
-  }
+  header { grid-column: 1/-1; display: flex; align-items: center; gap: 12px; padding: 12px 24px; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .logo { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; letter-spacing: -0.5px; color: var(--accent); }
+  .logo span { font-weight: 300; font-style: italic; color: var(--text-muted); }
+  .header-badge { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; background: var(--accent-light); color: var(--accent); padding: 3px 8px; border-radius: 20px; border: 1px solid #c2d4ce; }
+  .lang-switch { margin-left: auto; display: flex; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .lang-switch button { padding: 5px 12px; font-size: 11px; font-family: 'DM Mono', monospace; border: none; background: var(--surface); color: var(--text-muted); cursor: pointer; transition: all 0.12s; }
+  .lang-switch button + button { border-left: 1px solid var(--border); }
+  .lang-switch button.active { background: var(--accent); color: #fff; }
 
   /* SIDEBAR */
-  .sidebar {
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    padding: var(--gap-lg);
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-lg);
-    overflow-y: auto;
-  }
-
-  .section-title {
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-  }
+  .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+  .section-title { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
 
   /* DROP ZONE */
-  .drop-zone {
-    border: 1.5px dashed var(--border-strong);
-    border-radius: var(--radius-lg);
-    padding: 28px 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: var(--bg);
-  }
-
-  .drop-zone:hover, .drop-zone.drag-over {
-    border-color: var(--accent);
-    background: var(--accent-light);
-  }
-
-  .drop-icon {
-    font-size: 32px;
-    margin-bottom: 10px;
-    display: block;
-  }
-
-  .drop-title {
-    font-family: 'Fraunces', serif;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-
-  .drop-sub {
-    font-size: 11px;
-    color: var(--text-muted);
-    line-height: 1.5;
-  }
+  .drop-zone { border: 1.5px dashed var(--border-strong); border-radius: var(--radius-lg); padding: 24px 14px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg); }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: var(--accent-light); }
+  .drop-icon { font-size: 30px; margin-bottom: 8px; display: block; }
+  .drop-title { font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .drop-sub { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
 
   /* THUMBNAILS */
-  .thumbs-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .thumb-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--bg);
-    cursor: grab;
-    transition: border-color 0.15s, background 0.15s;
-  }
-
+  .thumbs-grid { display: flex; flex-direction: column; gap: 5px; }
+  .thumb-item { display: flex; align-items: center; gap: 7px; padding: 5px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); cursor: grab; transition: border-color 0.15s, background 0.15s; }
   .thumb-item:hover { border-color: var(--border-strong); }
   .thumb-item.dragging { opacity: 0.35; }
   .thumb-item.drag-over-item { border-color: var(--accent); background: var(--accent-light); }
-
-  .thumb-item img {
-    width: 48px;
-    height: 36px;
-    object-fit: cover;
-    border-radius: 3px;
-    flex-shrink: 0;
-  }
-
-  .thumb-name {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-
-  .thumb-num {
-    font-size: 11px;
-    color: var(--text-muted);
-    flex-shrink: 0;
-    min-width: 16px;
-  }
-
-  .thumb-rm {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: background 0.15s, color 0.15s;
-  }
-
+  .thumb-item img { width: 44px; height: 33px; object-fit: cover; border-radius: 3px; flex-shrink: 0; }
+  .thumb-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: var(--text-muted); }
+  .thumb-num { font-size: 11px; color: var(--text-muted); flex-shrink: 0; min-width: 14px; }
+  .thumb-rm { width: 17px; height: 17px; border-radius: 50%; border: none; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s, color 0.15s; }
   .thumb-rm:hover { background: #f0e0e0; color: var(--danger); }
 
   /* CONTROLS */
-  .control-group { display: flex; flex-direction: column; gap: 10px; }
-
-  .ctrl-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-  }
-
-  .ctrl-label {
-    font-size: 11px;
-    color: var(--text-muted);
-    white-space: nowrap;
-  }
-
-  .seg {
-    display: flex;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-
-  .seg button {
-    padding: 5px 10px;
-    font-size: 11px;
-    font-family: 'DM Mono', monospace;
-    border: none;
-    background: var(--surface);
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: background 0.12s, color 0.12s;
-    white-space: nowrap;
-  }
-
+  .control-group { display: flex; flex-direction: column; gap: 9px; }
+  .ctrl-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .ctrl-label { font-size: 11px; color: var(--text-muted); white-space: nowrap; min-width: 80px; }
+  .seg { display: flex; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; flex-shrink: 0; }
+  .seg button { padding: 5px 8px; font-size: 10px; font-family: 'DM Mono', monospace; border: none; background: var(--surface); color: var(--text-muted); cursor: pointer; transition: background 0.12s, color 0.12s; white-space: nowrap; }
   .seg button + button { border-left: 1px solid var(--border); }
   .seg button.active { background: var(--accent); color: #fff; }
   .seg button:hover:not(.active) { background: var(--accent-light); color: var(--accent); }
-
-  .ctrl-row input[type=range] {
-    flex: 1;
-    accent-color: var(--accent);
-  }
-
-  .ctrl-row input[type=color] {
-    width: 32px;
-    height: 26px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    cursor: pointer;
-    padding: 2px;
-    background: var(--surface);
-  }
-
-  .ctrl-val {
-    font-size: 11px;
-    min-width: 28px;
-    text-align: right;
-    color: var(--text);
-  }
+  .ctrl-row input[type=range] { flex: 1; accent-color: var(--accent); min-width: 0; }
+  .ctrl-row input[type=color] { width: 30px; height: 24px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; padding: 2px; background: var(--surface); }
+  .ctrl-val { font-size: 11px; min-width: 32px; text-align: right; color: var(--text); }
 
   /* BUTTONS */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    font-size: 12px;
-    font-family: 'DM Mono', monospace;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-
+  .btn { display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px; font-size: 12px; font-family: 'DM Mono', monospace; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
   .btn:hover { border-color: var(--border-strong); background: var(--bg); }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .btn.primary {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-    width: 100%;
-    justify-content: center;
-    font-size: 13px;
-    padding: 10px;
-  }
-
+  .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); width: 100%; justify-content: center; font-size: 13px; padding: 10px; }
   .btn.primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
-
-  .btn.danger-outline {
-    border-color: transparent;
-    color: var(--text-muted);
-    font-size: 11px;
-    padding: 6px 10px;
-  }
-
+  .btn.sm { padding: 5px 10px; font-size: 11px; }
+  .btn.danger-outline { border-color: transparent; color: var(--text-muted); font-size: 11px; padding: 5px 8px; }
   .btn.danger-outline:hover { color: var(--danger); background: #f8eded; border-color: #e8cccc; }
 
-  /* MAIN CANVAS AREA */
-  .main {
-    display: flex;
-    flex-direction: column;
-    padding: var(--gap-lg);
-    gap: var(--gap-md);
-    overflow: hidden;
-  }
+  /* DOWNLOAD FORMAT */
+  .dl-format { display: flex; gap: 6px; margin-bottom: 8px; }
+  .dl-format button { flex: 1; padding: 6px; font-size: 11px; font-family: 'DM Mono', monospace; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text-muted); cursor: pointer; transition: all 0.12s; }
+  .dl-format button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-  .canvas-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--gap-md);
-  }
-
-  .canvas-info {
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-
-  .zoom-controls {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .zoom-controls button {
-    width: 28px;
-    height: 28px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.12s;
-  }
-
+  /* MAIN */
+  .main { display: flex; flex-direction: column; padding: 20px; gap: 14px; overflow: hidden; }
+  .canvas-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  .canvas-info { font-size: 11px; color: var(--text-muted); }
+  .zoom-controls { display: flex; align-items: center; gap: 5px; }
+  .zoom-controls button { width: 26px; height: 26px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; transition: background 0.12s; }
   .zoom-controls button:hover { background: var(--bg); }
+  .zoom-val { font-size: 11px; min-width: 36px; text-align: center; color: var(--text-muted); }
+  .zoom-btn-text { width: auto !important; padding: 0 8px; font-size: 11px; font-family: 'DM Mono', monospace; }
 
-  .zoom-val {
-    font-size: 11px;
-    min-width: 38px;
-    text-align: center;
-    color: var(--text-muted);
-  }
-
+  /* CANVAS FRAME - free pan */
   .canvas-frame {
     flex: 1;
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     background: repeating-conic-gradient(#e0dbd4 0% 25%, #ece8e2 0% 50%) 0 0 / 20px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: auto;
-    min-height: 300px;
+    overflow: hidden;
     position: relative;
+    min-height: 300px;
+    cursor: grab;
+    user-select: none;
   }
+  .canvas-frame.panning { cursor: grabbing; }
+  .canvas-inner {
+    position: absolute;
+    top: 0; left: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+  canvas { display: block; box-shadow: 0 4px 24px rgba(0,0,0,0.13); }
+  .canvas-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+  .canvas-empty-icon { font-family: 'Fraunces', serif; font-size: 44px; font-style: italic; color: var(--border-strong); margin-bottom: 8px; }
+  .canvas-empty-text { font-size: 12px; color: var(--text-muted); }
 
-  .canvas-empty {
-    text-align: center;
-    pointer-events: none;
-  }
-
-  .canvas-empty-icon {
-    font-family: 'Fraunces', serif;
-    font-size: 48px;
-    font-style: italic;
-    color: var(--border-strong);
-    display: block;
-    margin-bottom: 8px;
-  }
-
-  .canvas-empty-text {
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-
-  canvas {
-    display: block;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
-    transform-origin: center center;
-    transition: transform 0.2s;
-  }
+  /* SORT BADGE */
+  .sort-active { color: var(--accent) !important; font-weight: 500; }
 </style>
 </head>
 <body>
-
 <div class="layout">
 
-  <!-- HEADER -->
-  <header>
-    <div class="logo">Panora<span>ma</span></div>
-    <div class="header-badge">Joiner</div>
-  </header>
+<!-- HEADER -->
+<header>
+  <div class="logo">Panora<span>ma</span></div>
+  <div class="header-badge">Joiner</div>
+  <div class="lang-switch" style="margin-left:auto">
+    <button class="active" id="lang-fi" onclick="setLang('fi')">FI</button>
+    <button id="lang-en" onclick="setLang('en')">EN</button>
+  </div>
+</header>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
+<!-- SIDEBAR -->
+<aside class="sidebar">
 
-    <!-- Drop zone -->
-    <div>
-      <div class="section-title">Kuvat</div>
-      <div class="drop-zone" id="drop-zone">
-        <span class="drop-icon">⬡</span>
-        <div class="drop-title">Pudota kuvat tähän</div>
-        <div class="drop-sub">tai klikkaa lisätäksesi<br>JPG · PNG · WEBP · GIF</div>
-      </div>
-      <input type="file" id="file-input" multiple accept="image/*" style="display:none">
+  <!-- Drop zone -->
+  <div>
+    <div class="section-title" data-t="images">Kuvat</div>
+    <div class="drop-zone" id="drop-zone">
+      <span class="drop-icon">⬡</span>
+      <div class="drop-title" data-t="drop-title">Pudota kuvat tähän</div>
+      <div class="drop-sub" data-t="drop-sub">tai klikkaa lisätäksesi<br>JPG · PNG · WEBP · GIF</div>
     </div>
+    <input type="file" id="file-input" multiple accept="image/*" style="display:none">
+  </div>
 
-    <!-- Thumbnails -->
-    <div id="thumbs-section" style="display:none">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div class="section-title" style="margin:0">Järjestys <span id="img-count" style="color:var(--text)">(0)</span></div>
-        <button class="btn danger-outline" id="clear-btn">Tyhjennä</button>
-      </div>
-      <div class="thumbs-grid" id="thumbs-grid"></div>
-      <div style="margin-top:8px">
-        <button class="btn" style="width:100%;justify-content:center;font-size:11px" id="add-more-btn">+ Lisää kuvia</button>
-      </div>
-    </div>
-
-    <!-- Controls -->
-    <div id="controls-section" style="display:none">
-      <div class="section-title">Asetukset</div>
-      <div class="control-group">
-
-        <div class="ctrl-row">
-          <span class="ctrl-label">Suunta</span>
-          <div class="seg" id="dir-seg">
-            <button class="active" data-dir="h">↔ Vaaka</button>
-            <button data-dir="v">↕ Pysty</button>
-          </div>
-        </div>
-
-        <div class="ctrl-row">
-          <span class="ctrl-label">Reunat</span>
-          <div class="seg" id="fit-seg">
-            <button class="active" data-fit="crop">Rajaa</button>
-            <button data-fit="fit">Sovita</button>
-            <button data-fit="stretch">Venytä</button>
-          </div>
-        </div>
-
-        <div class="ctrl-row">
-          <span class="ctrl-label">Kohdistus</span>
-          <div class="seg" id="align-seg">
-            <button class="active" data-align="center">Keski</button>
-            <button data-align="start">Alku</button>
-            <button data-align="end">Loppu</button>
-          </div>
-        </div>
-
-        <div class="ctrl-row">
-          <span class="ctrl-label">Väli (px)</span>
-          <input type="range" id="gap-r" min="0" max="100" value="0" step="1">
-          <span class="ctrl-val" id="gap-v">0</span>
-        </div>
-
-        <div class="ctrl-row">
-          <span class="ctrl-label">Päällekkäisyys</span>
-          <input type="range" id="overlap-r" min="0" max="50" value="0" step="1">
-          <span class="ctrl-val" id="overlap-v">0%</span>
-        </div>
-
-        <div class="ctrl-row">
-          <span class="ctrl-label">Taustaväri</span>
-          <input type="color" id="bg-color" value="#ffffff">
-        </div>
-
-        <div class="ctrl-row">
-          <span class="ctrl-label">Laatu</span>
-          <div class="seg" id="qual-seg">
-            <button data-q="0.7">Matala</button>
-            <button class="active" data-q="0.92">Normaali</button>
-            <button data-q="1.0">Korkea</button>
-          </div>
-        </div>
-
+  <!-- Thumbnails -->
+  <div id="thumbs-section" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div class="section-title" style="margin:0" data-t="order">Järjestys <span id="img-count">(0)</span></div>
+      <div style="display:flex;gap:4px;align-items:center">
+        <button class="btn danger-outline" id="sort-btn" title="Sort by filename" onclick="sortByName()">⇅ A–Z</button>
+        <button class="btn danger-outline" id="clear-btn" data-t-btn="clear">Tyhjennä</button>
       </div>
     </div>
-
-    <!-- Download -->
-    <div style="margin-top:auto">
-      <button class="btn primary" id="dl-btn" disabled>↓ Lataa panoraama</button>
-      <div style="text-align:center;margin-top:8px;font-size:10px;color:var(--text-muted)" id="dl-info"></div>
+    <div class="thumbs-grid" id="thumbs-grid"></div>
+    <div style="margin-top:7px">
+      <button class="btn" style="width:100%;justify-content:center;font-size:11px" id="add-more-btn" data-t-btn="add-more">+ Lisää kuvia</button>
     </div>
+  </div>
 
-  </aside>
+  <!-- Controls -->
+  <div id="controls-section" style="display:none">
+    <div class="section-title" data-t="settings">Asetukset</div>
+    <div class="control-group">
 
-  <!-- MAIN -->
-  <main class="main">
-    <div class="canvas-toolbar">
-      <div class="canvas-info" id="canvas-info">Ei kuvia</div>
+      <div class="ctrl-row">
+        <span class="ctrl-label" data-t="direction">Suunta</span>
+        <div class="seg" id="dir-seg">
+          <button class="active" data-dir="ltr">↔ LTR</button>
+          <button data-dir="rtl">↔ RTL</button>
+          <button data-dir="ttb">↕ TTB</button>
+          <button data-dir="btt">↕ BTT</button>
+        </div>
+      </div>
+
+      <div class="ctrl-row">
+        <span class="ctrl-label" data-t="edges">Reunat</span>
+        <div class="seg" id="fit-seg">
+          <button class="active" data-fit="crop" data-t-btn="crop">Rajaa</button>
+          <button data-fit="fit" data-t-btn="fit">Sovita</button>
+          <button data-fit="stretch" data-t-btn="stretch">Venytä</button>
+        </div>
+      </div>
+
+      <div class="ctrl-row">
+        <span class="ctrl-label" data-t="align">Kohdistus</span>
+        <div class="seg" id="align-seg">
+          <button class="active" data-align="center" data-t-btn="center">Keski</button>
+          <button data-align="start" data-t-btn="start">Alku</button>
+          <button data-align="end" data-t-btn="end">Loppu</button>
+        </div>
+      </div>
+
+      <div class="ctrl-row">
+        <span class="ctrl-label" data-t="gap">Väli (px)</span>
+        <input type="range" id="gap-r" min="0" max="100" value="0" step="1">
+        <span class="ctrl-val" id="gap-v">0</span>
+      </div>
+
+      <div class="ctrl-row">
+        <span class="ctrl-label" data-t="overlap">Päällekkäisyys</span>
+        <input type="range" id="overlap-r" min="0" max="50" value="0" step="1">
+        <span class="ctrl-val" id="overlap-v">0%</span>
+      </div>
+
+      <div class="ctrl-row">
+        <span class="ctrl-label" data-t="bgcolor">Taustaväri</span>
+        <input type="color" id="bg-color" value="#ffffff">
+      </div>
+
+      <div class="ctrl-row">
+        <span class="ctrl-label" data-t="quality">Laatu</span>
+        <div class="seg" id="qual-seg">
+          <button data-q="0.7" data-t-btn="low">Matala</button>
+          <button class="active" data-q="0.92" data-t-btn="normal">Normaali</button>
+          <button data-q="1.0" data-t-btn="high">Korkea</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Download -->
+  <div style="margin-top:auto">
+    <div class="section-title" data-t="export">Vie</div>
+    <div class="dl-format">
+      <button class="active" id="fmt-jpg" onclick="setFmt('jpg')">JPG</button>
+      <button id="fmt-png" onclick="setFmt('png')">PNG</button>
+    </div>
+    <button class="btn primary" id="dl-btn" disabled data-t-btn="download">↓ Lataa panoraama</button>
+    <div style="text-align:center;margin-top:6px;font-size:10px;color:var(--text-muted)" id="dl-info"></div>
+  </div>
+
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="canvas-toolbar">
+    <div class="canvas-info" id="canvas-info" data-t="no-images">Ei kuvia</div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
       <div class="zoom-controls">
         <button id="zoom-out">−</button>
         <span class="zoom-val" id="zoom-label">100%</span>
         <button id="zoom-in">+</button>
-        <button id="zoom-fit" style="width:auto;padding:0 10px;font-size:11px;font-family:inherit">Sovita</button>
+        <button class="zoom-btn-text" id="zoom-fit" style="width:auto;padding:0 8px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;height:26px" data-t-btn="fit-view">Sovita näkymä</button>
+        <button class="zoom-btn-text" id="zoom-100" style="width:auto;padding:0 8px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;height:26px">100%</button>
       </div>
+      <div style="font-size:10px;color:var(--text-muted)" data-t="pan-hint">Raahaa kanvasta vapaasti</div>
     </div>
+  </div>
 
-    <div class="canvas-frame" id="canvas-frame">
-      <div class="canvas-empty" id="canvas-empty">
-        <span class="canvas-empty-icon">Panor</span>
-        <div class="canvas-empty-text">Lisää vähintään 2 kuvaa aloittaaksesi</div>
-      </div>
+  <div class="canvas-frame" id="canvas-frame">
+    <div class="canvas-inner" id="canvas-inner"></div>
+    <div class="canvas-empty" id="canvas-empty">
+      <div class="canvas-empty-icon">Panor</div>
+      <div class="canvas-empty-text" data-t="empty-hint">Lisää vähintään 2 kuvaa aloittaaksesi</div>
     </div>
-  </main>
+  </div>
+</main>
 
 </div>
 
 <script>
+// ── TRANSLATIONS ──────────────────────────────────────────────
+const T = {
+  fi: {
+    'images': 'Kuvat', 'drop-title': 'Pudota kuvat tähän',
+    'drop-sub': 'tai klikkaa lisätäksesi<br>JPG · PNG · WEBP · GIF',
+    'order': 'Järjestys', 'settings': 'Asetukset', 'export': 'Vie',
+    'direction': 'Suunta', 'edges': 'Reunat', 'align': 'Kohdistus',
+    'gap': 'Väli (px)', 'overlap': 'Päällekkäisyys', 'bgcolor': 'Taustaväri',
+    'quality': 'Laatu', 'no-images': 'Ei kuvia', 'empty-hint': 'Lisää vähintään 2 kuvaa aloittaaksesi',
+    'pan-hint': 'Raahaa kanvasta vapaasti',
+    'fit-view': 'Sovita näkymä',
+    // buttons
+    'clear': 'Tyhjennä', 'add-more': '+ Lisää kuvia', 'download': '↓ Lataa panoraama',
+    'crop': 'Rajaa', 'fit': 'Sovita', 'stretch': 'Venytä',
+    'center': 'Keski', 'start': 'Alku', 'end': 'Loppu',
+    'low': 'Matala', 'normal': 'Normaali', 'high': 'Korkea',
+  },
+  en: {
+    'images': 'Images', 'drop-title': 'Drop images here',
+    'drop-sub': 'or click to browse<br>JPG · PNG · WEBP · GIF',
+    'order': 'Order', 'settings': 'Settings', 'export': 'Export',
+    'direction': 'Direction', 'edges': 'Edges', 'align': 'Align',
+    'gap': 'Gap (px)', 'overlap': 'Overlap', 'bgcolor': 'Background',
+    'quality': 'Quality', 'no-images': 'No images', 'empty-hint': 'Add at least 2 images to start',
+    'pan-hint': 'Drag canvas freely',
+    'fit-view': 'Fit view',
+    'clear': 'Clear', 'add-more': '+ Add images', 'download': '↓ Download panorama',
+    'crop': 'Crop', 'fit': 'Fit', 'stretch': 'Stretch',
+    'center': 'Center', 'start': 'Start', 'end': 'End',
+    'low': 'Low', 'normal': 'Normal', 'high': 'High',
+  }
+};
+let lang = 'fi';
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('lang-fi').classList.toggle('active', l === 'fi');
+  document.getElementById('lang-en').classList.toggle('active', l === 'en');
+  // translate data-t elements
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const key = el.dataset.t;
+    if (T[l][key] !== undefined) {
+      if (key === 'drop-sub' || key === 'order') {
+        if (key === 'order') {
+          el.innerHTML = T[l][key] + ' <span id="img-count">' + $('img-count').textContent + '</span>';
+        } else {
+          el.innerHTML = T[l][key];
+        }
+      } else {
+        el.textContent = T[l][key];
+      }
+    }
+  });
+  document.querySelectorAll('[data-t-btn]').forEach(el => {
+    const key = el.dataset.tBtn;
+    if (T[l][key] !== undefined) el.textContent = T[l][key];
+  });
+  // special: drop-sub uses innerHTML
+  const dsub = document.querySelector('[data-t="drop-sub"]');
+  if (dsub) dsub.innerHTML = T[l]['drop-sub'];
+  // update dl info
+  updateDlInfo();
+}
+
+// ── STATE ──────────────────────────────────────────────────────
 const state = {
-  images: [], dir: 'h', fit: 'crop', align: 'center',
-  gap: 0, overlap: 0, bg: '#ffffff', quality: 0.92, zoom: 1
+  images: [], dir: 'ltr', fit: 'crop', align: 'center',
+  gap: 0, overlap: 0, bg: '#ffffff', quality: 0.92, zoom: 1,
+  fmt: 'jpg',
+  panX: 0, panY: 0
 };
 
 let dragSrcIdx = null;
 let currentCanvas = null;
+let isPanning = false, panStartX = 0, panStartY = 0, panOriginX = 0, panOriginY = 0;
 
 const $ = id => document.getElementById(id);
 const dropZone = $('drop-zone');
@@ -531,95 +343,183 @@ const thumbsSection = $('thumbs-section');
 const thumbsGrid = $('thumbs-grid');
 const controlsSection = $('controls-section');
 const canvasFrame = $('canvas-frame');
+const canvasInner = $('canvas-inner');
 const canvasEmpty = $('canvas-empty');
 const dlBtn = $('dl-btn');
 const dlInfo = $('dl-info');
 const canvasInfo = $('canvas-info');
 const zoomLabel = $('zoom-label');
 
-// Events
+// ── LANGUAGE INIT ──────────────────────────────────────────────
+setLang('fi');
+
+// ── FILE INPUT ─────────────────────────────────────────────────
 dropZone.onclick = () => fileInput.click();
 $('add-more-btn').onclick = () => fileInput.click();
 $('clear-btn').onclick = () => { state.images = []; redraw(); };
 fileInput.onchange = e => loadFiles(e.target.files);
-
 dropZone.ondragover = e => { e.preventDefault(); dropZone.classList.add('drag-over'); };
 dropZone.ondragleave = () => dropZone.classList.remove('drag-over');
 dropZone.ondrop = e => { e.preventDefault(); dropZone.classList.remove('drag-over'); loadFiles(e.dataTransfer.files); };
 
-// Seg buttons
-function setupSeg(id, key) {
-  document.getElementById(id).querySelectorAll('button').forEach(b => {
-    b.onclick = () => {
-      document.getElementById(id).querySelectorAll('button').forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
-      state[key] = b.dataset[key] || b.dataset.q || b.dataset.dir || b.dataset.fit || b.dataset.align;
-      draw();
-    };
-  });
-}
-
+// ── DIRECTION SEG ──────────────────────────────────────────────
 $('dir-seg').querySelectorAll('button').forEach(b => {
-  b.onclick = () => { $('dir-seg').querySelectorAll('button').forEach(x => x.classList.remove('active')); b.classList.add('active'); state.dir = b.dataset.dir; draw(); };
+  b.onclick = () => {
+    $('dir-seg').querySelectorAll('button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); state.dir = b.dataset.dir; draw();
+  };
 });
 $('fit-seg').querySelectorAll('button').forEach(b => {
-  b.onclick = () => { $('fit-seg').querySelectorAll('button').forEach(x => x.classList.remove('active')); b.classList.add('active'); state.fit = b.dataset.fit; draw(); };
+  b.onclick = () => {
+    $('fit-seg').querySelectorAll('button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); state.fit = b.dataset.fit; draw();
+  };
 });
 $('align-seg').querySelectorAll('button').forEach(b => {
-  b.onclick = () => { $('align-seg').querySelectorAll('button').forEach(x => x.classList.remove('active')); b.classList.add('active'); state.align = b.dataset.align; draw(); };
+  b.onclick = () => {
+    $('align-seg').querySelectorAll('button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); state.align = b.dataset.align; draw();
+  };
 });
 $('qual-seg').querySelectorAll('button').forEach(b => {
-  b.onclick = () => { $('qual-seg').querySelectorAll('button').forEach(x => x.classList.remove('active')); b.classList.add('active'); state.quality = parseFloat(b.dataset.q); };
+  b.onclick = () => {
+    $('qual-seg').querySelectorAll('button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); state.quality = parseFloat(b.dataset.q);
+  };
 });
 
+// ── SLIDERS ────────────────────────────────────────────────────
 $('gap-r').oninput = () => {
-  state.gap = parseInt($('gap-r').value);
-  $('gap-v').textContent = state.gap;
+  state.gap = parseInt($('gap-r').value); $('gap-v').textContent = state.gap;
   if (state.gap > 0) { state.overlap = 0; $('overlap-r').value = 0; $('overlap-v').textContent = '0%'; }
   draw();
 };
 $('overlap-r').oninput = () => {
-  state.overlap = parseInt($('overlap-r').value);
-  $('overlap-v').textContent = state.overlap + '%';
+  state.overlap = parseInt($('overlap-r').value); $('overlap-v').textContent = state.overlap + '%';
   if (state.overlap > 0) { state.gap = 0; $('gap-r').value = 0; $('gap-v').textContent = '0'; }
   draw();
 };
 $('bg-color').oninput = () => { state.bg = $('bg-color').value; draw(); };
 
-// Zoom
-$('zoom-in').onclick = () => { state.zoom = Math.min(state.zoom * 1.25, 4); applyZoom(); };
-$('zoom-out').onclick = () => { state.zoom = Math.max(state.zoom / 1.25, 0.1); applyZoom(); };
-$('zoom-fit').onclick = () => fitZoom();
+// ── FORMAT ─────────────────────────────────────────────────────
+function setFmt(f) {
+  state.fmt = f;
+  $('fmt-jpg').classList.toggle('active', f === 'jpg');
+  $('fmt-png').classList.toggle('active', f === 'png');
+  updateDlInfo();
+}
 
-function applyZoom() {
-  if (currentCanvas) {
-    currentCanvas.style.transform = `scale(${state.zoom})`;
-    zoomLabel.textContent = Math.round(state.zoom * 100) + '%';
+function updateDlInfo() {
+  if (!currentCanvas) return;
+  const cw = currentCanvas.width, ch = currentCanvas.height;
+  if (state.fmt === 'jpg') {
+    dlInfo.textContent = `~${(cw * ch * 3 / 1024 / 1024).toFixed(1)} MB raw`;
+  } else {
+    dlInfo.textContent = `PNG – ${lang === 'fi' ? 'läpinäkyvyys tuettu' : 'transparency supported'}`;
   }
+}
+
+// ── ZOOM ───────────────────────────────────────────────────────
+$('zoom-in').onclick = () => { state.zoom = Math.min(state.zoom * 1.25, 8); applyTransform(); };
+$('zoom-out').onclick = () => { state.zoom = Math.max(state.zoom / 1.25, 0.05); applyTransform(); };
+$('zoom-fit').onclick = () => fitZoom();
+$('zoom-100').onclick = () => { state.zoom = 1; centerCanvas(); applyTransform(); };
+
+// Scroll-to-zoom
+canvasFrame.addEventListener('wheel', e => {
+  e.preventDefault();
+  const rect = canvasFrame.getBoundingClientRect();
+  const mouseX = e.clientX - rect.left;
+  const mouseY = e.clientY - rect.top;
+  const oldZoom = state.zoom;
+  const factor = e.deltaY < 0 ? 1.1 : 0.9;
+  state.zoom = Math.min(8, Math.max(0.05, state.zoom * factor));
+  // zoom toward mouse
+  state.panX = mouseX - (mouseX - state.panX) * (state.zoom / oldZoom);
+  state.panY = mouseY - (mouseY - state.panY) * (state.zoom / oldZoom);
+  applyTransform();
+}, { passive: false });
+
+// ── FREE PAN ───────────────────────────────────────────────────
+canvasFrame.addEventListener('mousedown', e => {
+  if (e.button !== 0) return;
+  isPanning = true;
+  panStartX = e.clientX; panStartY = e.clientY;
+  panOriginX = state.panX; panOriginY = state.panY;
+  canvasFrame.classList.add('panning');
+});
+window.addEventListener('mousemove', e => {
+  if (!isPanning) return;
+  state.panX = panOriginX + (e.clientX - panStartX);
+  state.panY = panOriginY + (e.clientY - panStartY);
+  applyTransform(false); // no transition during drag
+});
+window.addEventListener('mouseup', () => { isPanning = false; canvasFrame.classList.remove('panning'); });
+
+// Touch pan
+canvasFrame.addEventListener('touchstart', e => {
+  if (e.touches.length !== 1) return;
+  isPanning = true;
+  panStartX = e.touches[0].clientX; panStartY = e.touches[0].clientY;
+  panOriginX = state.panX; panOriginY = state.panY;
+}, { passive: true });
+canvasFrame.addEventListener('touchmove', e => {
+  if (!isPanning || e.touches.length !== 1) return;
+  e.preventDefault();
+  state.panX = panOriginX + (e.touches[0].clientX - panStartX);
+  state.panY = panOriginY + (e.touches[0].clientY - panStartY);
+  applyTransform(false);
+}, { passive: false });
+canvasFrame.addEventListener('touchend', () => { isPanning = false; });
+
+function applyTransform(animate = true) {
+  canvasInner.style.transition = animate ? 'transform 0.15s ease' : 'none';
+  canvasInner.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
+  zoomLabel.textContent = Math.round(state.zoom * 100) + '%';
+}
+
+function centerCanvas() {
+  if (!currentCanvas) return;
+  const frame = canvasFrame.getBoundingClientRect();
+  state.panX = (frame.width - currentCanvas.width * state.zoom) / 2;
+  state.panY = (frame.height - currentCanvas.height * state.zoom) / 2;
 }
 
 function fitZoom() {
   if (!currentCanvas) return;
   const frame = canvasFrame.getBoundingClientRect();
-  const scaleW = (frame.width - 48) / currentCanvas.width;
-  const scaleH = (frame.height - 48) / currentCanvas.height;
+  const scaleW = (frame.width - 40) / currentCanvas.width;
+  const scaleH = (frame.height - 40) / currentCanvas.height;
   state.zoom = Math.min(scaleW, scaleH, 1);
-  applyZoom();
+  centerCanvas();
+  applyTransform();
 }
 
-// Download
+// ── DOWNLOAD ───────────────────────────────────────────────────
 dlBtn.onclick = () => {
   if (!currentCanvas) return;
   const a = document.createElement('a');
-  a.href = currentCanvas.toDataURL('image/jpeg', state.quality);
-  a.download = 'panoraama.jpg';
+  if (state.fmt === 'png') {
+    a.href = currentCanvas.toDataURL('image/png');
+    a.download = 'panoraama.png';
+  } else {
+    a.href = currentCanvas.toDataURL('image/jpeg', state.quality);
+    a.download = 'panoraama.jpg';
+  }
   a.click();
 };
 
-// Load files
+// ── SORT BY NAME ───────────────────────────────────────────────
+function sortByName() {
+  state.images.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+  redraw();
+}
+
+// ── LOAD FILES ─────────────────────────────────────────────────
 function loadFiles(files) {
   const arr = Array.from(files).filter(f => f.type.startsWith('image/'));
   let loaded = 0;
+  if (arr.length === 0) return;
   arr.forEach(file => {
     const reader = new FileReader();
     reader.onload = e => {
@@ -627,7 +527,11 @@ function loadFiles(files) {
       img.onload = () => {
         state.images.push({ img, name: file.name });
         loaded++;
-        if (loaded === arr.length) redraw();
+        if (loaded === arr.length) {
+          // auto-sort by name on initial load
+          state.images.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+          redraw();
+        }
       };
       img.src = e.target.result;
     };
@@ -635,17 +539,16 @@ function loadFiles(files) {
   });
 }
 
-// Redraw thumbnails + canvas
+// ── REDRAW THUMBNAILS ──────────────────────────────────────────
 function redraw() {
   fileInput.value = '';
   const n = state.images.length;
   dropZone.style.display = n > 0 ? 'none' : '';
   thumbsSection.style.display = n > 0 ? '' : 'none';
   controlsSection.style.display = n >= 2 ? '' : 'none';
-  canvasEmpty.style.display = n >= 2 ? 'none' : '';
+  canvasEmpty.style.display = n >= 2 ? 'none' : 'flex';
   $('img-count').textContent = '(' + n + ')';
 
-  // Thumbnails
   thumbsGrid.innerHTML = '';
   state.images.forEach((item, i) => {
     const div = document.createElement('div');
@@ -654,7 +557,7 @@ function redraw() {
     div.innerHTML = `
       <span class="thumb-num">${i + 1}</span>
       <img src="${item.img.src}" alt="">
-      <span class="thumb-name">${item.name}</span>
+      <span class="thumb-name" title="${item.name}">${item.name}</span>
       <button class="thumb-rm" data-i="${i}">×</button>
     `;
     div.ondragstart = () => { dragSrcIdx = i; setTimeout(() => div.classList.add('dragging'), 0); };
@@ -662,13 +565,11 @@ function redraw() {
     div.ondragover = e => { e.preventDefault(); div.classList.add('drag-over-item'); };
     div.ondragleave = () => div.classList.remove('drag-over-item');
     div.ondrop = e => {
-      e.preventDefault();
-      div.classList.remove('drag-over-item');
+      e.preventDefault(); div.classList.remove('drag-over-item');
       if (dragSrcIdx === null || dragSrcIdx === i) return;
       const moved = state.images.splice(dragSrcIdx, 1)[0];
       state.images.splice(i, 0, moved);
-      dragSrcIdx = null;
-      redraw();
+      dragSrcIdx = null; redraw();
     };
     div.querySelector('.thumb-rm').onclick = () => { state.images.splice(i, 1); redraw(); };
     thumbsGrid.appendChild(div);
@@ -676,62 +577,62 @@ function redraw() {
 
   if (n >= 2) draw();
   else {
-    if (currentCanvas) { currentCanvas.remove(); currentCanvas = null; }
-    dlBtn.disabled = true; dlInfo.textContent = ''; canvasInfo.textContent = 'Ei kuvia';
+    canvasInner.innerHTML = '';
+    currentCanvas = null;
+    dlBtn.disabled = true; dlInfo.textContent = '';
+    canvasInfo.textContent = T[lang]['no-images'];
   }
 }
 
-// Main draw
+// ── MAIN DRAW ──────────────────────────────────────────────────
 function draw() {
   if (state.images.length < 2) return;
-  const imgs = state.images.map(x => x.img);
-  const gap = state.gap;
-  const isH = state.dir === 'h';
-  const n = imgs.length;
 
-  // Compute per-image scaled dims first
+  // Direction helpers
+  // ltr: left→right, rtl: right→left, ttb: top→bottom, btt: bottom→top
+  const dir = state.dir;
+  const isH = dir === 'ltr' || dir === 'rtl';
+
+  const imgs = state.images.map(x => x.img); // already ordered in state
+  // For RTL/BTT we reverse the draw order
+  const drawImgs = (dir === 'rtl' || dir === 'btt') ? [...imgs].reverse() : imgs;
+
+  const n = drawImgs.length;
+  const gap = state.gap;
+
+  // Compute scaled dims
   let scaledDims = [];
   let ref;
   if (state.fit === 'crop') {
-    ref = isH ? Math.min(...imgs.map(im => im.height)) : Math.min(...imgs.map(im => im.width));
+    ref = isH ? Math.min(...drawImgs.map(im => im.height)) : Math.min(...drawImgs.map(im => im.width));
   } else if (state.fit === 'fit') {
-    ref = isH ? Math.max(...imgs.map(im => im.height)) : Math.max(...imgs.map(im => im.width));
+    ref = isH ? Math.max(...drawImgs.map(im => im.height)) : Math.max(...drawImgs.map(im => im.width));
   }
 
-  imgs.forEach(im => {
+  drawImgs.forEach(im => {
     let sw, sh;
-    if (state.fit === 'stretch') {
-      sw = im.width; sh = im.height;
-    } else {
+    if (state.fit === 'stretch') { sw = im.width; sh = im.height; }
+    else {
       if (isH) { sh = ref; sw = Math.round(im.width * ref / im.height); }
       else { sw = ref; sh = Math.round(im.height * ref / im.width); }
     }
     scaledDims.push({ sw, sh });
   });
 
-  // Overlap: fraction of each image's leading dimension to hide
   const overlapFrac = state.overlap / 100;
 
-  // Compute canvas size
+  // Canvas size
   let cw, ch;
   if (isH) {
     const totalW = scaledDims.reduce((s, d) => s + d.sw, 0);
     const overlapPx = scaledDims.slice(0, -1).reduce((s, d) => s + Math.round(d.sw * overlapFrac), 0);
     cw = totalW - overlapPx + gap * (n - 1);
-    if (state.fit === 'stretch') {
-      ch = Math.max(...imgs.map(im => im.height));
-    } else {
-      ch = ref;
-    }
+    ch = state.fit === 'stretch' ? Math.max(...drawImgs.map(im => im.height)) : ref;
   } else {
     const totalH = scaledDims.reduce((s, d) => s + d.sh, 0);
     const overlapPx = scaledDims.slice(0, -1).reduce((s, d) => s + Math.round(d.sh * overlapFrac), 0);
     ch = totalH - overlapPx + gap * (n - 1);
-    if (state.fit === 'stretch') {
-      cw = Math.max(...imgs.map(im => im.width));
-    } else {
-      cw = ref;
-    }
+    cw = state.fit === 'stretch' ? Math.max(...drawImgs.map(im => im.width)) : ref;
   }
 
   const canvas = document.createElement('canvas');
@@ -739,11 +640,12 @@ function draw() {
   canvas.height = Math.max(1, ch);
   const ctx = canvas.getContext('2d');
 
+  // Background (transparent for PNG if white not needed)
   ctx.fillStyle = state.bg;
   ctx.fillRect(0, 0, cw, ch);
 
   let offset = 0;
-  imgs.forEach((im, i) => {
+  drawImgs.forEach((im, i) => {
     const { sw, sh } = scaledDims[i];
     let dx, dy, dw, dh;
 
@@ -758,21 +660,18 @@ function draw() {
     }
 
     ctx.drawImage(im, dx, dy, dw, dh);
-
-    const step = (isH ? sw : sh);
-    const overlapPx = i < n - 1 ? Math.round(step * overlapFrac) : 0;
-    offset += step - overlapPx + gap;
+    const step = isH ? sw : sh;
+    const oPx = i < n - 1 ? Math.round(step * overlapFrac) : 0;
+    offset += step - oPx + gap;
   });
 
-  if (currentCanvas) currentCanvas.remove();
   currentCanvas = canvas;
-  canvasFrame.appendChild(canvas);
+  canvasInner.innerHTML = '';
+  canvasInner.appendChild(canvas);
 
-  const mb = (cw * ch * 3 / 1024 / 1024).toFixed(1);
   canvasInfo.textContent = `${cw} × ${ch} px`;
-  dlInfo.textContent = `~${mb} MB raakana`;
   dlBtn.disabled = false;
-
+  updateDlInfo();
   fitZoom();
 }
 </script>
